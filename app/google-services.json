@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "741062737006",
+    "firebase_url": "https://edmt-food-order.firebaseio.com",
+    "project_id": "edmt-food-order",
+    "storage_bucket": "edmt-food-order.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:741062737006:android:ab16e554ee029e5c",
+        "android_client_info": {
+          "package_name": "com.example.salmangeforce.food_order"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "741062737006-2an2bmtc490qv3jubaac0heomusilgvq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.salmangeforce.food_order",
+            "certificate_hash": "cc0bf25a9d5f57d608a8668aa72809918e67e87d"
+          }
+        },
+        {
+          "client_id": "741062737006-re5g1k02eaobbh6le15gjdbil34210u1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBhQjxhYdJdAm_O42ggSoFrM_ezA0ik9-c"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "741062737006-re5g1k02eaobbh6le15gjdbil34210u1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
