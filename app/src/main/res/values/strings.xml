@@ -19,4 +19,11 @@
     <string name="my_name">Salman Yousaf</string>
     <string name="menu">Menu</string>
     <string name="image">Image</string>
+    <string name="place_order">Place Order</string>
+    <string name="_1_000">$1,000</string>
+    <string name="_12345678">12345678</string>
+    <string name="_03234380625">03234380625</string>
+    <string name="_0_00">$0.00</string>
+    <string name="walton_road">Walton Road</string>
+    <string name="shipping">shipping</string>
 </resources>

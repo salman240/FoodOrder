@@ -38,5 +38,9 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.firebaseui:firebase-ui-database:4.2.1'
     compile 'com.cepheuen.elegant-number-button:lib:1.0.2'
+    compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+    //noinspection GradleDynamicVersion
+    compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'
+    implementation 'com.github.mancj:MaterialSearchBar:0.7.6'
 
 }
