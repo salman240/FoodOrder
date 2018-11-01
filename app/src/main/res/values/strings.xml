@@ -2,6 +2,8 @@
     <string name="app_name">Food_Order</string>
     <string name="action_settings">Settings</string>
     <string name="slogan">No matter where you are whether you are at home, or in the office, or in the beach, we will find you and we will feed you!</string>
+    <string name="sloganServer">We transport products to our customers as quickly as ex betrays</string>
+
     <string name="sign_up">SIGN UP</string>
     <string name="sign_in">SIGN IN</string>
     <string name="phone_number">Phone Number</string>
@@ -26,4 +28,9 @@
     <string name="_0_00">$0.00</string>
     <string name="walton_road">Walton Road</string>
     <string name="shipping">shipping</string>
+    <string name="server">Server</string>
+    <string name="client">Client</string>
+    <string name="title_activity_home_server">HomeActivityServer</string>
+    <string name="upload">Upload</string>
+    <string name="select">Select</string>
 </resources>

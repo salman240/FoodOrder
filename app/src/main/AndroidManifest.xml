@@ -4,6 +4,7 @@
     package="com.example.salmangeforce.food_order">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -12,15 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:ignore="GoogleAppIndexingWarning"
+        tools:ignore="AllowBackup,GoogleAppIndexingWarning"
         tools:replace="android:icon">
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".MainActivity"></activity>
         <activity android:name=".SignIn" />
         <activity android:name=".SignUp" />
         <activity
@@ -30,7 +25,24 @@
         <activity android:name=".FoodActivity" />
         <activity android:name=".FoodDetailActivity" />
         <activity android:name=".CartActivity" />
-        <activity android:name=".OrderStatusActivity"></activity>
+        <activity android:name=".OrderStatusActivity" />
+        <activity
+            android:name=".Server.MainActivityServer"
+            tools:ignore="InnerclassSeparator" />
+        <activity android:name=".ChooseActivity"></activity>
+        <activity
+            android:name=".Server.SignInServer"
+            tools:ignore="InnerclassSeparator">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Server.HomeActivityServer"
+            android:label="@string/title_activity_home_server"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

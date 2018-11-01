@@ -16,7 +16,7 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-    
+
     <style name="colapsedAppbar" parent="TextAppearance.AppCompat.Medium">
         <item name="android:textSize">24sp</item>
         <item name="android:textColor">@android:color/white</item>

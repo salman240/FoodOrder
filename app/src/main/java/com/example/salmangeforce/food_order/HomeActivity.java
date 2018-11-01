@@ -100,7 +100,8 @@ public class HomeActivity extends AppCompatActivity
     //Helper Method
     private void loadMenu()
     {
-        FirebaseRecyclerOptions<Category> options = new FirebaseRecyclerOptions.Builder<Category>().setQuery(category, Category.class).build();
+        FirebaseRecyclerOptions<Category> options = new FirebaseRecyclerOptions.Builder<Category>()
+                .setQuery(category, Category.class).build();
         adapter = new FirebaseRecyclerAdapter<Category, MenuViewHolder>(options) {
             @NonNull
             @Override

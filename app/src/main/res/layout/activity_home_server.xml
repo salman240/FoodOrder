@@ -10,7 +10,7 @@
     tools:openDrawer="start">
 
     <include
-        layout="@layout/app_bar_home"
+        layout="@layout/app_bar_home_activity_server"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
@@ -23,7 +23,7 @@
         android:fitsSystemWindows="true"
         app:itemTextColor="@android:color/white"
         app:itemIconTint="@android:color/white"
-        app:headerLayout="@layout/nav_header_home"
-        app:menu="@menu/activity_home_drawer" />
+        app:headerLayout="@layout/nav_header_home_activity_server"
+        app:menu="@menu/activity_home_server_drawer" />
 
 </android.support.v4.widget.DrawerLayout>

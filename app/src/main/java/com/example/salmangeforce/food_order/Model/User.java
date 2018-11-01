@@ -4,6 +4,7 @@ public class User {
     private String name;
     private String password;
     private String phone;
+    private String isStaff;
 
     public User(){}
 
@@ -16,6 +17,13 @@ public class User {
         this.name = name;
         this.password = password;
         this.phone = phone;
+    }
+
+    public User(String name, String password, String phone, String isStaff) {
+        this.name = name;
+        this.password = password;
+        this.phone = phone;
+        this.isStaff = isStaff;
     }
 
     public String getName() {
@@ -40,5 +48,13 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getIsStaff() {
+        return isStaff;
+    }
+
+    public void setIsStaff(String isStaff) {
+        this.isStaff = isStaff;
     }
 }
