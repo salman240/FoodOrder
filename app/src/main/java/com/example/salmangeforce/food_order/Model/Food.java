@@ -1,64 +1,73 @@
 package com.example.salmangeforce.food_order.Model;
 
 public class Food {
-    private String Name;
-    private String Image;
-    private String Description;
-    private String Price;
-    private String Discount;
-    private String MenuId;
+    private String name;
+    private String image;
+    private String description;
+    private String price;
+    private String discount;
+    private String menuId;
 
     public Food(){}
+
+    public Food(String name, String description, String price, String discount, String menuId, String image) {
+        this.name = name;
+        this.image = image;
+        this.description = description;
+        this.price = price;
+        this.discount = discount;
+        this.menuId = menuId;
+    }
 
     // Getter Methods
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public String getImage() {
-        return Image;
+        return image;
     }
 
     public String getDescription() {
-        return Description;
+        return description;
     }
 
     public String getPrice() {
-        return Price;
+        return price;
     }
 
     public String getDiscount() {
-        return Discount;
+        return discount;
     }
 
     public String getMenuId() {
-        return MenuId;
+        return menuId;
     }
 
     // Setter Methods
 
     public void setName(String Name) {
-        this.Name = Name;
+        this.name = Name;
     }
 
     public void setImage(String Image) {
-        this.Image = Image;
+        this.image = Image;
     }
 
     public void setDescription(String Description) {
-        this.Description = Description;
+        this.description = Description;
     }
 
     public void setPrice(String Price) {
-        this.Price = Price;
+        this.price = Price;
     }
 
     public void setDiscount(String Discount) {
-        this.Discount = Discount;
+        this.discount = Discount;
     }
 
     public void setMenuId(String MenuId) {
-        this.MenuId = MenuId;
+        this.menuId = MenuId;
     }
 }

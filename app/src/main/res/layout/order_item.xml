@@ -29,10 +29,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/shipping"
+            android:textColor="@color/colorPrimary"
             android:layout_below="@id/order_id"
             android:padding="4dp"
             android:textSize="16sp"
-            android:textStyle="normal"/>
+            android:fontFamily="casual"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/order_phone"

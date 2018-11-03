@@ -45,6 +45,14 @@
             app:met_minCharacters="8"
             app:met_primaryColor="#fff"/>
 
+        <com.rey.material.widget.CheckBox
+            android:id="@+id/remember_me"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/remember_me"
+            android:textColor="#fff"
+            android:gravity="center_vertical"/>
+
 
     </LinearLayout>
 

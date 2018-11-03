@@ -33,4 +33,9 @@
     <string name="title_activity_home_server">HomeActivityServer</string>
     <string name="upload">Upload</string>
     <string name="select">Select</string>
+    <string name="description">Description</string>
+    <string name="price">Price</string>
+    <string name="discount">Discount</string>
+    <string name="title_activity_tracking_order">TrackingOrderActivity</string>
+    <string name="remember_me">Remember me</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.example.salmangeforce.food_order;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.salmangeforce.food_order.Database.Database;
 import com.example.salmangeforce.food_order.Interface.ItemClickListener;
 import com.example.salmangeforce.food_order.Model.Food;
 import com.example.salmangeforce.food_order.ViewHolders.FoodViewHolder;
@@ -41,6 +43,8 @@ public class FoodActivity extends AppCompatActivity {
     RecyclerView recyclerViewFood;
     String categoryId;
 
+    Database database;
+
     List<String> suggested;
     MaterialSearchBar materialSearchBar;
 
@@ -52,6 +56,7 @@ public class FoodActivity extends AppCompatActivity {
         //init firebase
         firebaseDatabase = FirebaseDatabase.getInstance();
         foods = firebaseDatabase.getReference("Food");
+        database = new Database(this);
 
          suggested = new ArrayList<>();
          materialSearchBar = findViewById(R.id.searchBar);
@@ -136,7 +141,7 @@ public class FoodActivity extends AppCompatActivity {
     //Helper Method
     private void loadFoods() {
         FirebaseRecyclerOptions<Food> options = new FirebaseRecyclerOptions.Builder<Food>().
-                setQuery(foods.orderByChild("MenuId").equalTo(categoryId), Food.class).build();
+                setQuery(foods.orderByChild("menuId").equalTo(categoryId), Food.class).build();
 
         adapter = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(options) {
             @NonNull
@@ -147,9 +152,35 @@ public class FoodActivity extends AppCompatActivity {
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull FoodViewHolder holder, int position, @NonNull final Food model) {
+            protected void onBindViewHolder(@NonNull FoodViewHolder holder, @SuppressLint("RecyclerView") final int position, @NonNull final Food model) {
                 TextView textViewName = holder.itemView.findViewById(R.id.food_name);
                 ImageView imageView = holder.itemView.findViewById(R.id.food_image);
+                final ImageView imageViewFav = holder.itemView.findViewById(R.id.favorite);
+
+                if(database.isFavorite(adapter.getRef(position).getKey()))
+                {
+                    imageViewFav.setImageResource(R.drawable.ic_favorite_black_24dp);
+                }
+                else
+                {
+                    imageViewFav.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                }
+
+                imageViewFav.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(database.isFavorite(adapter.getRef(position).getKey()))
+                        {
+                            database.removeFromFavorite(adapter.getRef(position).getKey());
+                            imageViewFav.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                        }
+                        else
+                        {
+                            database.addToFavorite(adapter.getRef(position).getKey());
+                            imageViewFav.setImageResource(R.drawable.ic_favorite_black_24dp);
+                        }
+                    }
+                });
 
                 textViewName.setText(model.getName());
                 Picasso.get().load(model.getImage()).into(imageView);
@@ -177,6 +208,7 @@ public class FoodActivity extends AppCompatActivity {
                 for(DataSnapshot suggestions : dataSnapshot.getChildren())
                 {
                     Food item = suggestions.getValue(Food.class);
+                    assert item != null;
                     suggested.add(item.getName());
                 }
                 materialSearchBar.setLastSuggestions(suggested);
@@ -192,7 +224,7 @@ public class FoodActivity extends AppCompatActivity {
 
     private void filterResult(CharSequence text) {
         FirebaseRecyclerOptions<Food> options = new FirebaseRecyclerOptions.Builder<Food>().
-                setQuery(foods.orderByChild("Name").equalTo(text.toString()), Food.class).build();
+                setQuery(foods.orderByChild("name").equalTo(text.toString()), Food.class).build();
 
         searchAdapter = new FirebaseRecyclerAdapter<Food, FoodViewHolder>(options) {
             @NonNull
@@ -206,6 +238,7 @@ public class FoodActivity extends AppCompatActivity {
             protected void onBindViewHolder(@NonNull FoodViewHolder holder, int position, @NonNull final Food model) {
                 TextView textViewName = holder.itemView.findViewById(R.id.food_name);
                 ImageView imageView = holder.itemView.findViewById(R.id.food_image);
+
 
                 textViewName.setText(model.getName());
                 Picasso.get().load(model.getImage()).into(imageView);

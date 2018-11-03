@@ -37,25 +37,12 @@ public class MainActivityServer extends AppCompatActivity implements View.OnClic
         {
             Intent intent = new Intent(MainActivityServer.this, SignInServer.class);
             startActivity(intent);
+            finish();
         }
     }
 
     @Override
     public void onBackPressed() {
-        if(isSinglePressed)
-        {
-            super.onBackPressed();
-        }
-        else
-        {
-            isSinglePressed = true;
-            Toast.makeText(this, "Press again to exit", Toast.LENGTH_SHORT).show();
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    isSinglePressed = false;
-                }
-            },2000);
-        }
+        super.onBackPressed();
     }
 }

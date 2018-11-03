@@ -18,19 +18,30 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import io.paperdb.Paper;
+
+import static com.example.salmangeforce.food_order.Common.Common.CLIENT;
+import static com.example.salmangeforce.food_order.Common.Common.SERVER;
+import static com.example.salmangeforce.food_order.Common.Common.USER_NAME;
+import static com.example.salmangeforce.food_order.Common.Common.USER_PASSWORD;
+import static com.example.salmangeforce.food_order.Common.Common.USER_PHONE;
+
 public class SignIn extends AppCompatActivity {
 
     EditText editPhone, editPassord;
     Button btnSignIn;
+    com.rey.material.widget.CheckBox rememberMe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+        Paper.init(this);
 
         editPhone = findViewById(R.id.editPhone);
         editPassord = findViewById(R.id.editPassord);
         btnSignIn = findViewById(R.id.btnSignIn);
+        rememberMe = findViewById(R.id.remember_me);
 
         //Firebase Init
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -55,6 +66,14 @@ public class SignIn extends AppCompatActivity {
                             assert user != null;
                             if (user.getPassword().equals(editPassord.getText().toString()))
                             {
+                                //remember me
+                                if(rememberMe.isChecked())
+                                {
+                                    Paper.book(CLIENT).write(USER_PHONE, editPhone.getText().toString());
+                                    Paper.book(CLIENT).write(USER_PASSWORD, editPassord.getText().toString());
+                                    Paper.book(CLIENT).write(USER_NAME, user.getName());
+                                }
+
                                 user.setPhone(editPhone.getText().toString());
                                 Intent intent = new Intent(SignIn.this, HomeActivity.class);
                                 Common.currentUser = user;

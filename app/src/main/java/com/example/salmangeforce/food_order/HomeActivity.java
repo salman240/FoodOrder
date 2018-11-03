@@ -2,6 +2,7 @@ package com.example.salmangeforce.food_order;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +20,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.salmangeforce.food_order.Common.Common;
 import com.example.salmangeforce.food_order.Interface.ItemClickListener;
@@ -30,7 +32,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
 
+import io.paperdb.Paper;
+
 import static android.support.v7.widget.LinearLayoutManager.VERTICAL;
+import static com.example.salmangeforce.food_order.Common.Common.CLIENT;
+import static com.example.salmangeforce.food_order.Common.Common.USER_NAME;
+import static com.example.salmangeforce.food_order.Common.Common.USER_PASSWORD;
+import static com.example.salmangeforce.food_order.Common.Common.USER_PHONE;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -40,6 +48,7 @@ public class HomeActivity extends AppCompatActivity
     FirebaseRecyclerAdapter<Category, MenuViewHolder> adapter;
     TextView textViewName;
     RecyclerView recyclerView_menu;
+    private boolean isSinglePressed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +57,8 @@ public class HomeActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Menu");
         setSupportActionBar(toolbar);
+
+        Paper.init(this);
 
         //Set firebase
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -139,8 +150,22 @@ public class HomeActivity extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        }
+
+        if(isSinglePressed)
+        {
             super.onBackPressed();
+        }
+        else
+        {
+            isSinglePressed = true;
+            Toast.makeText(this, "Press again to exit", Toast.LENGTH_SHORT).show();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    isSinglePressed = false;
+                }
+            },2000);
         }
     }
 
@@ -175,6 +200,11 @@ public class HomeActivity extends AppCompatActivity
             Intent intent = new Intent(HomeActivity.this, OrderStatusActivity.class);
             startActivity(intent);
         } else if (id == R.id.nav_sign_out) {
+            //clearing remember me data in PaperDb
+            Paper.book(CLIENT).delete(USER_PHONE);
+            Paper.book(CLIENT).delete(USER_PASSWORD);
+            Paper.book(CLIENT).delete(USER_NAME);
+
             Intent intent = new Intent(HomeActivity.this, MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

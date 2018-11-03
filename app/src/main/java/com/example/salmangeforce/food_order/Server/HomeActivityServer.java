@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -28,18 +29,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.salmangeforce.food_order.Common.Common;
+import com.example.salmangeforce.food_order.HomeActivity;
 import com.example.salmangeforce.food_order.Interface.ItemClickListener;
+import com.example.salmangeforce.food_order.MainActivity;
 import com.example.salmangeforce.food_order.Model.Category;
-import com.example.salmangeforce.food_order.Model.Food;
 import com.example.salmangeforce.food_order.R;
-import com.example.salmangeforce.food_order.ViewHolders.FoodViewHolder;
-import com.example.salmangeforce.food_order.ViewHolders.MenuViewHolder;
+import com.example.salmangeforce.food_order.Server.ViewHolders.MenuViewHolderServer;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -49,7 +53,14 @@ import com.squareup.picasso.Picasso;
 
 import java.util.UUID;
 
+import io.paperdb.Paper;
+
 import static android.widget.Toast.LENGTH_SHORT;
+import static com.example.salmangeforce.food_order.Common.Common.CLIENT;
+import static com.example.salmangeforce.food_order.Common.Common.SERVER;
+import static com.example.salmangeforce.food_order.Common.Common.USER_NAME;
+import static com.example.salmangeforce.food_order.Common.Common.USER_PASSWORD;
+import static com.example.salmangeforce.food_order.Common.Common.USER_PHONE;
 
 public class HomeActivityServer extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -68,6 +79,7 @@ public class HomeActivityServer extends AppCompatActivity
     private Button btnSelect;
     private Uri saveUri;
     private DrawerLayout drawer;
+    private boolean isSinglePressed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +88,8 @@ public class HomeActivityServer extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("Menu Management");
         setSupportActionBar(toolbar);
+
+        Paper.init(this);
 
         //Firebase init
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -143,8 +157,22 @@ public class HomeActivityServer extends AppCompatActivity
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        }
+        
+        if(isSinglePressed)
+        {
             super.onBackPressed();
+        }
+        else
+        {
+            isSinglePressed = true;
+            Toast.makeText(this, "Press again to exit", Toast.LENGTH_SHORT).show();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    isSinglePressed = false;
+                }
+            },2000);
         }
     }
 
@@ -157,54 +185,90 @@ public class HomeActivityServer extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-
         return super.onOptionsItemSelected(item);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
+        if(id == R.id.nav_orders)
+        {
+            Intent intent = new Intent(HomeActivityServer.this, OrderStatusActivityServer.class);
+            startActivity(intent);
+        }
+        if(id == R.id.nav_sign_out)
+        {
+            //clearing remember me data in PaperDb
+            Paper.book(SERVER).delete(USER_PHONE);
+            Paper.book(SERVER).delete(USER_PASSWORD);
+            Paper.book(SERVER).delete(USER_NAME);
 
-//        if (id == R.id.nav) {
-//            // Handle the camera action
-//        } else if (id == R.id.nav_gallery) {
-//
-//        } else if (id == R.id.nav_slideshow) {
-//
-//        } else if (id == R.id.nav_manage) {
-//
-//        } else if (id == R.id.nav_share) {
-//
-//        } else if (id == R.id.nav_send) {
-//
-//        }
+            Intent intent = new Intent(HomeActivityServer.this, MainActivityServer.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        if(item.getTitle().equals(Common.UPDATE))
+        {
+            updateCategory(adapter.getRef(item.getOrder()).getKey(), (Category) adapter.getItem(item.getOrder()));
+        }
+        else if(item.getTitle().equals(Common.DELETE))
+        {
+            deleteCategory(adapter.getRef(item.getOrder()).getKey());
+        }
+        return super.onContextItemSelected(item);
+    }
 
 
     //Helper Methods
+    private void loadMenu() {
+        FirebaseRecyclerOptions<Category> options = new FirebaseRecyclerOptions.Builder<Category>().setQuery(category, Category.class).build();
+        adapter = new FirebaseRecyclerAdapter<Category, MenuViewHolderServer>(options) {
+            @NonNull
+            @Override
+            public MenuViewHolderServer onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.menu_item, parent, false);
+                return new MenuViewHolderServer(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull MenuViewHolderServer holder, int position, @NonNull final Category model) {
+                TextView textViewMenuName = holder.itemView.findViewById(R.id.menu_name);
+                ImageView imageViewMenuImage = holder.itemView.findViewById(R.id.menu_image);
+
+                textViewMenuName.setText(model.getName());
+                Picasso.get().load(model.getImage()).into(imageViewMenuImage);
+                holder.setItemClickListener(new ItemClickListener() {
+                    @Override
+                    public void onclick(View view, int position, boolean isLongClick) {
+                        //We need to send CategoryId to the next sub-activity
+                        Intent intentFood = new Intent(HomeActivityServer.this, FoodActivityServer.class);
+                        intentFood.putExtra("categoryId", adapter.getRef(position).getKey());
+                        startActivity(intentFood);
+                    }
+                });
+            }
+        };
+
+        recyclerView.setAdapter(adapter);
+    }
+
+
     private void addMenuDialog() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         alertDialog.setTitle("Add new Category");
         alertDialog.setMessage("Please provide information about category");
         alertDialog.setIcon(R.drawable.ic_shopping_cart_black_24dp);
 
-        View view = getLayoutInflater().inflate(R.layout.custom_add_food_dialog, null);
+        View view = getLayoutInflater().inflate(R.layout.custom_add_category_dialog, null);
         alertDialog.setView(view);
 
         etName = view.findViewById(R.id.food_name);
@@ -290,38 +354,111 @@ public class HomeActivityServer extends AppCompatActivity
     }
 
 
-    private void loadMenu() {
-        FirebaseRecyclerOptions<Category> options = new FirebaseRecyclerOptions.Builder<Category>().setQuery(category, Category.class).build();
-        adapter = new FirebaseRecyclerAdapter<Category, MenuViewHolder>(options) {
-            @NonNull
+    private void updateCategory(final String key, final Category item) {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        alertDialog.setTitle("Update Category");
+        alertDialog.setMessage("Please update information about category");
+        alertDialog.setIcon(R.drawable.ic_shopping_cart_black_24dp);
+
+        View view = getLayoutInflater().inflate(R.layout.custom_add_category_dialog, null);
+        alertDialog.setView(view);
+
+        etName = view.findViewById(R.id.food_name);
+        btnUpload = view.findViewById(R.id.btnUpload);
+        btnSelect = view.findViewById(R.id.btnSelect);
+
+        etName.setText(item.getName());
+
+        btnSelect.setOnClickListener(new View.OnClickListener() {
             @Override
-            public MenuViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.menu_item, parent, false);
-                return new MenuViewHolder(view);
+            public void onClick(View view) {
+                selectImage();
             }
+        });
 
+        btnUpload.setOnClickListener(new View.OnClickListener() {
             @Override
-            protected void onBindViewHolder(@NonNull MenuViewHolder holder, int position, @NonNull final Category model) {
-                TextView textViewMenuName = holder.itemView.findViewById(R.id.menu_name);
-                ImageView imageViewMenuImage = holder.itemView.findViewById(R.id.menu_image);
-
-                textViewMenuName.setText(model.getName());
-                Picasso.get().load(model.getImage()).into(imageViewMenuImage);
-                holder.setItemClickListener(new ItemClickListener() {
-                    @Override
-                    public void onclick(View view, int position, boolean isLongClick) {
-                        Toast.makeText(HomeActivityServer.this, model.getName(), LENGTH_SHORT).show();
-                        //We need to send CategoryId to the next sub-activity
-//                        Intent intentFood = new Intent(HomeActivityServer.this, FoodActivity.class);
-//                        intentFood.putExtra("categoryId", adapter.getRef(position).getKey());
-//                        startActivity(intentFood);
-                    }
-                });
+            public void onClick(View view) {
+                updateImage(key, item);
             }
-        };
+        });
 
-        recyclerView.setAdapter(adapter);
+
+        alertDialog.setNegativeButton("Close", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+                saveUri = null;
+            }
+        });
+
+        alertDialog.show();
     }
 
 
-}
+    private void updateImage(final String key, final Category item) {
+        if(saveUri != null && !etName.getText().toString().equals(""))
+        {
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setMessage("Uploading...");
+            progressDialog.show();
+
+            final String imageName = UUID.randomUUID().toString();
+            final StorageReference imageStorage = storageReference.child("images/" + imageName);
+            imageStorage.putFile(saveUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    imageStorage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            progressDialog.dismiss();
+                            item.setName(etName.getText().toString());
+                            item.setImage(uri.toString());
+                            category.child(key).setValue(item);
+                            Snackbar.make(drawer, "Category updated successfully", Snackbar.LENGTH_SHORT).show();
+                            saveUri = null;
+                        }
+                    });
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    progressDialog.dismiss();
+                    Snackbar.make(drawer, e.getLocalizedMessage(), Snackbar.LENGTH_SHORT).show();
+                }
+            }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                    int progress = (int) (100.0 * (taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount());
+                    progressDialog.setMessage("Uploading : " + progress);
+                }
+            });
+        }
+        else
+        {
+            Toast.makeText(this, "Please provide name and image both", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private void deleteCategory(final String key) {
+        category.child(key).removeValue();
+        DatabaseReference foods =  firebaseDatabase.getReference("Food");
+        foods.orderByChild("menuId").equalTo(key).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot food : dataSnapshot.getChildren())
+                {
+                    food.getRef().removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+}//class ends
