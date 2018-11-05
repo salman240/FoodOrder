@@ -10,4 +10,11 @@
 
     <color name="overlayBackground">#7f333639</color>
     <color name="overlayActionBar">#0e0d0e</color>
+
+    <color name="white">#fff</color>
+
+    <color name="gray">#d8d8d8</color>
+
+
+    <color name="yellow">#f4d90c</color>
 </resources>

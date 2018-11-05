@@ -139,7 +139,7 @@ public class TrackingOrderActivity extends FragmentActivity implements OnMapRead
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        displaylocation();
+//        displaylocation();
         startLocationUpdates();
     }
 
@@ -277,6 +277,7 @@ public class TrackingOrderActivity extends FragmentActivity implements OnMapRead
             @Override
             public void onLocationChanged(Location location) {
                 mLastLocation = location;
+                displaylocation();
             }
         });
     }
@@ -307,5 +308,6 @@ public class TrackingOrderActivity extends FragmentActivity implements OnMapRead
         }
         return latLng;
     }
+
 
 }//class ends.

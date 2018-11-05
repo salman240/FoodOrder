@@ -52,7 +52,8 @@ public class OrderStatusService extends Service {
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Request request = dataSnapshot.getValue(Request.class);
                 assert request != null;
-                showNotification(dataSnapshot.getKey(), request);
+                if(request.getPhone().equals(Common.currentUser.getPhone()))
+                    showNotification(dataSnapshot.getKey(), request);
             }
 
             @Override

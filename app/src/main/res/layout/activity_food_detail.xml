@@ -56,6 +56,18 @@
         app:layout_anchorGravity="bottom|right"
         app:useCompatPadding="true"/>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/btnRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_star_black_24dp"
+        app:backgroundTint="@android:color/white"
+        android:elevation="8dp"
+        app:pressedTranslationZ="16dp"
+        app:layout_anchor="@id/app_bar_layout"
+        app:layout_anchorGravity="bottom|left"
+        app:useCompatPadding="true"/>
+
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -134,16 +146,36 @@
                 app:cardElevation="8dp"
                 app:cardUseCompatPadding="true">
 
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <RatingBar
+                        android:id="@+id/food_rating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:numStars="5"
+                        android:isIndicator="true"
+                        android:backgroundTint="@color/colorPrimary"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:progressTint="@color/colorAccent"
+                        android:progressBackgroundTint="@color/colorAccent"
+                        android:secondaryProgressTint="@color/colorAccent"
+                        />
+
                     <TextView
                         android:id="@+id/food_description"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="12dp"
-                        android:text="Food Description"
+                        android:text="@string/food_description"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:textColor="@color/colorPrimary"
-                        android:layout_marginTop="8dp"/>
+                        android:textColor="@color/colorPrimary" />
+
+                </LinearLayout>
 
             </android.support.v7.widget.CardView>
 

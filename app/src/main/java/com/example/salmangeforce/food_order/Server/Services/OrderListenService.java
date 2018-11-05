@@ -47,8 +47,8 @@ public class OrderListenService extends Service {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Request request = dataSnapshot.getValue(Request.class);
                 assert request != null;
-                if(request.getStatus().equals("0"))
-                showNotification(dataSnapshot.getKey(), request);
+                if(request.getStatus().equals("0") && request.getPhone().equals(Common.currentUser.getPhone()))
+                    showNotification(dataSnapshot.getKey(), request);
             }
 
             @Override

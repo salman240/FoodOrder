@@ -14,9 +14,6 @@ import com.example.salmangeforce.food_order.Common.Common;
 import com.example.salmangeforce.food_order.Model.User;
 import com.example.salmangeforce.food_order.Server.HomeActivityServer;
 import com.example.salmangeforce.food_order.Server.MainActivityServer;
-import com.example.salmangeforce.food_order.Server.OrderStatusActivityServer;
-import com.example.salmangeforce.food_order.Server.Services.OrderListenService;
-import com.example.salmangeforce.food_order.Services.OrderStatusService;
 
 import io.paperdb.Paper;
 
@@ -49,7 +46,7 @@ public class ChooseActivity extends AppCompatActivity implements View.OnClickLis
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                progressBar.setVisibility(View.GONE);
+                progressBar.setVisibility(View.INVISIBLE);
                 btnClient.animate().alpha(1).setDuration(300);
                 btnServer.animate().alpha(1).setDuration(300);
             }
@@ -95,9 +92,10 @@ public class ChooseActivity extends AppCompatActivity implements View.OnClickLis
                     startActivity(intent);
                     finish();
                 }
-            } else {
-                Snackbar.make(relativeLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
             }
+        }
+        else {
+            Snackbar.make(relativeLayout, "No Internet Connection!", Snackbar.LENGTH_LONG).show();
         }
     }
 
