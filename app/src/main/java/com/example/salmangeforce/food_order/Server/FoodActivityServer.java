@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -65,6 +66,7 @@ public class FoodActivityServer extends AppCompatActivity {
     FirebaseRecyclerAdapter adapter;
     FirebaseRecyclerAdapter searchAdapter;
     RecyclerView recyclerViewFood;
+    SwipeRefreshLayout swipeRefreshLayout;
     String categoryId;
 
     List<String> suggested;
@@ -95,6 +97,8 @@ public class FoodActivityServer extends AppCompatActivity {
         materialSearchBar = findViewById(R.id.searchBar);
         materialSearchBar.setCardViewElevation(10);
 
+        swipeRefreshLayout = findViewById(R.id.refreshFood);
+
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,6 +117,24 @@ public class FoodActivityServer extends AppCompatActivity {
 
         loadFoods();
         loadSuggestion();
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if(materialSearchBar.getText().equals(""))
+                {
+                    adapter.stopListening();
+                    loadFoods();
+                    loadSuggestion();
+                    adapter.startListening();
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+                else
+                {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            }
+        });
 
         //Search bar logic
         materialSearchBar.addTextChangeListener(new TextWatcher() {

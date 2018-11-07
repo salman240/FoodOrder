@@ -39,4 +39,7 @@
     <string name="title_activity_tracking_order">TrackingOrderActivity</string>
     <string name="remember_me">Remember me</string>
     <string name="food_description">Food Description</string>
+
+    <string name="facebook_app_id">358682634886397</string>
+    <string name="facebook_login_protocol_name">fb358682634886397</string>
 </resources>

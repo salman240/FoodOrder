@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -74,6 +75,8 @@ public class HomeActivityServer extends AppCompatActivity
     DatabaseReference category;
     FirebaseStorage firebaseStorage;
     StorageReference storageReference;
+    SwipeRefreshLayout swipeRefreshLayout;
+
     private MaterialEditText etName;
     private Button btnUpload;
     private Button btnSelect;
@@ -106,6 +109,8 @@ public class HomeActivityServer extends AppCompatActivity
             }
         });
 
+        swipeRefreshLayout = findViewById(R.id.swipeHome);
+
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -124,6 +129,16 @@ public class HomeActivityServer extends AppCompatActivity
         recyclerView.setHasFixedSize(true);
 
         loadMenu();
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                adapter.stopListening();
+                loadMenu();
+                adapter.startListening();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 
 

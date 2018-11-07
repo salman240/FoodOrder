@@ -55,4 +55,7 @@ dependencies {
     compile 'io.paperdb:paperdb:2.6'
     compile 'com.stepstone.apprating:app-rating:2.3.0'
 
+    //facebook share
+    compile 'com.facebook.android:facebook-share:[4,5)'
+
 }

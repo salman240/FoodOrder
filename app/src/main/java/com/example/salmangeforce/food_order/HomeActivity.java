@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -49,6 +50,7 @@ public class HomeActivity extends AppCompatActivity
     TextView textViewName;
     RecyclerView recyclerView_menu;
     private boolean isSinglePressed;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +76,7 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
+        swipeRefreshLayout = findViewById(R.id.swipeHome);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -94,6 +97,16 @@ public class HomeActivity extends AppCompatActivity
         recyclerView_menu.setLayoutManager(new LinearLayoutManager(this, VERTICAL, false));
 
         loadMenu();
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                adapter.stopListening();
+                loadMenu();
+                adapter.startListening();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
     }
 
     @Override

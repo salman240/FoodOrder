@@ -1,10 +1,16 @@
 package com.example.salmangeforce.food_order;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -14,6 +20,9 @@ import com.example.salmangeforce.food_order.Common.Common;
 import com.example.salmangeforce.food_order.Model.User;
 import com.example.salmangeforce.food_order.Server.HomeActivityServer;
 import com.example.salmangeforce.food_order.Server.MainActivityServer;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import io.paperdb.Paper;
 
@@ -34,6 +43,22 @@ public class ChooseActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose);
         Paper.init(this);
+
+        //Get key hash for fb
+        try {
+
+            @SuppressLint("PackageManagerGetSignatures") PackageInfo info =
+                    getPackageManager().getPackageInfo("com.example.salmangeforce.food_order",
+                            PackageManager.GET_SIGNATURES);
+
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+                Log.d("MY KEY HASH:", Base64.encodeToString(md.digest(), Base64.DEFAULT));
+            }
+        } catch (PackageManager.NameNotFoundException | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
 
         relativeLayout = findViewById(R.id.parent);
         btnClient = findViewById(R.id.btnClient);

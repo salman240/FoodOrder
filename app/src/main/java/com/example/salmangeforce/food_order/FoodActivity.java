@@ -2,8 +2,11 @@ package com.example.salmangeforce.food_order;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +23,10 @@ import com.example.salmangeforce.food_order.Database.Database;
 import com.example.salmangeforce.food_order.Interface.ItemClickListener;
 import com.example.salmangeforce.food_order.Model.Food;
 import com.example.salmangeforce.food_order.ViewHolders.FoodViewHolder;
+import com.facebook.CallbackManager;
+import com.facebook.share.model.SharePhoto;
+import com.facebook.share.model.SharePhotoContent;
+import com.facebook.share.widget.ShareDialog;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -30,6 +37,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mancj.materialsearchbar.SimpleOnSearchActionListener;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,10 +48,38 @@ public class FoodActivity extends AppCompatActivity {
     DatabaseReference foods;
     FirebaseRecyclerAdapter adapter;
     FirebaseRecyclerAdapter searchAdapter;
+    SwipeRefreshLayout swipeRefreshLayout;
     RecyclerView recyclerViewFood;
     String categoryId;
 
     Database database;
+    CallbackManager callbackManager;
+    ShareDialog shareDialog;
+
+    Target target = new Target() {
+        @Override
+        public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+            SharePhoto photo = new SharePhoto.Builder()
+                    .setBitmap(bitmap)
+                    .build();
+            if(ShareDialog.canShow(SharePhotoContent.class)) {
+                SharePhotoContent content = new SharePhotoContent.Builder()
+                        .addPhoto(photo)
+                        .build();
+                shareDialog.show(content);
+            }
+        }
+
+        @Override
+        public void onBitmapFailed(Exception e, Drawable errorDrawable) {
+
+        }
+
+        @Override
+        public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+        }
+    };
 
     List<String> suggested;
     MaterialSearchBar materialSearchBar;
@@ -52,6 +88,11 @@ public class FoodActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_food);
+
+        //fb share
+        callbackManager = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(this);
+        swipeRefreshLayout = findViewById(R.id.refreshFood);
 
         //init firebase
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -72,6 +113,24 @@ public class FoodActivity extends AppCompatActivity {
 
         loadFoods();
         loadSuggestion();
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (materialSearchBar.getText().equals(""))
+                {
+                    adapter.stopListening();
+                    loadFoods();
+                    loadSuggestion();
+                    adapter.startListening();
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+                else
+                {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            }
+        });
 
         //Search bar logic
         materialSearchBar.addTextChangeListener(new TextWatcher() {
@@ -156,6 +215,7 @@ public class FoodActivity extends AppCompatActivity {
                 TextView textViewName = holder.itemView.findViewById(R.id.food_name);
                 ImageView imageView = holder.itemView.findViewById(R.id.food_image);
                 final ImageView imageViewFav = holder.itemView.findViewById(R.id.favorite);
+                final ImageView imageFbShare = holder.itemView.findViewById(R.id.fb_share);
 
                 if(database.isFavorite(adapter.getRef(position).getKey()))
                 {
@@ -194,6 +254,14 @@ public class FoodActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 });
+
+                //fb_share_button_click_listener
+                imageFbShare.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Picasso.get().load(model.getImage()).into(target);
+                    }
+                });
             }
         };
 
@@ -202,7 +270,7 @@ public class FoodActivity extends AppCompatActivity {
 
 
     private void loadSuggestion() {
-        foods.orderByChild("MenuId").equalTo(categoryId).addValueEventListener(new ValueEventListener() {
+        foods.orderByChild("menuId").equalTo(categoryId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot suggestions : dataSnapshot.getChildren())
@@ -238,7 +306,7 @@ public class FoodActivity extends AppCompatActivity {
             protected void onBindViewHolder(@NonNull FoodViewHolder holder, int position, @NonNull final Food model) {
                 TextView textViewName = holder.itemView.findViewById(R.id.food_name);
                 ImageView imageView = holder.itemView.findViewById(R.id.food_image);
-
+                final ImageView imageFbShare = holder.itemView.findViewById(R.id.fb_share);
 
                 textViewName.setText(model.getName());
                 Picasso.get().load(model.getImage()).into(imageView);
@@ -251,6 +319,14 @@ public class FoodActivity extends AppCompatActivity {
                         intent.putExtra("foodId", searchAdapter.getRef(position).getKey());
                         startActivity(intent);
                         materialSearchBar.disableSearch();
+                    }
+                });
+
+                //fb_share_button_click_listener
+                imageFbShare.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Picasso.get().load(model.getImage()).into(target);
                     }
                 });
             }
