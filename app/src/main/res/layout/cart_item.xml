@@ -40,6 +40,17 @@
             android:contentDescription="@string/image" />
 
 
+        <com.cepheuen.elegantnumberbutton.view.ElegantNumberButton
+            android:id="@+id/cart_change_quantity"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            app:initialNumber="1"
+            app:finalNumber="10"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true">
+
+        </com.cepheuen.elegantnumberbutton.view.ElegantNumberButton>
+
 
     </RelativeLayout>
 

@@ -26,13 +26,12 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.salmangeforce.food_order.Common.Common;
-import com.example.salmangeforce.food_order.HomeActivity;
 import com.example.salmangeforce.food_order.Interface.ItemClickListener;
-import com.example.salmangeforce.food_order.MainActivity;
 import com.example.salmangeforce.food_order.Model.Category;
 import com.example.salmangeforce.food_order.R;
 import com.example.salmangeforce.food_order.Server.ViewHolders.MenuViewHolderServer;
@@ -57,7 +56,6 @@ import java.util.UUID;
 import io.paperdb.Paper;
 
 import static android.widget.Toast.LENGTH_SHORT;
-import static com.example.salmangeforce.food_order.Common.Common.CLIENT;
 import static com.example.salmangeforce.food_order.Common.Common.SERVER;
 import static com.example.salmangeforce.food_order.Common.Common.USER_NAME;
 import static com.example.salmangeforce.food_order.Common.Common.USER_PASSWORD;
@@ -245,12 +243,15 @@ public class HomeActivityServer extends AppCompatActivity
 
     //Helper Methods
     private void loadMenu() {
+        ProgressBar progressBar = findViewById(R.id.progress);
+        progressBar.setVisibility(View.GONE);
+
         FirebaseRecyclerOptions<Category> options = new FirebaseRecyclerOptions.Builder<Category>().setQuery(category, Category.class).build();
         adapter = new FirebaseRecyclerAdapter<Category, MenuViewHolderServer>(options) {
             @NonNull
             @Override
             public MenuViewHolderServer onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.menu_item, parent, false);
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.menu_item_server, parent, false);
                 return new MenuViewHolderServer(view);
             }
 

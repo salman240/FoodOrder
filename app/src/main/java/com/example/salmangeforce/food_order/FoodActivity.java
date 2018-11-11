@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.example.salmangeforce.food_order.Database.Database;
 import com.example.salmangeforce.food_order.Interface.ItemClickListener;
 import com.example.salmangeforce.food_order.Model.Food;
+import com.example.salmangeforce.food_order.Model.Order;
 import com.example.salmangeforce.food_order.ViewHolders.FoodViewHolder;
 import com.facebook.CallbackManager;
 import com.facebook.share.model.SharePhoto;
@@ -216,14 +217,18 @@ public class FoodActivity extends AppCompatActivity {
                 ImageView imageView = holder.itemView.findViewById(R.id.food_image);
                 final ImageView imageViewFav = holder.itemView.findViewById(R.id.favorite);
                 final ImageView imageFbShare = holder.itemView.findViewById(R.id.fb_share);
+                final ImageView imageViewCart = holder.itemView.findViewById(R.id.cart);
+
+                textViewName.setText(model.getName());
+                Picasso.get().load(model.getImage()).into(imageView);
 
                 if(database.isFavorite(adapter.getRef(position).getKey()))
                 {
-                    imageViewFav.setImageResource(R.drawable.ic_favorite_black_24dp);
+                    imageViewFav.setImageResource(R.drawable.ic_favorite_white_24dp);
                 }
                 else
                 {
-                    imageViewFav.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                    imageViewFav.setImageResource(R.drawable.ic_favorite_border_white_24dp);
                 }
 
                 imageViewFav.setOnClickListener(new View.OnClickListener() {
@@ -232,18 +237,31 @@ public class FoodActivity extends AppCompatActivity {
                         if(database.isFavorite(adapter.getRef(position).getKey()))
                         {
                             database.removeFromFavorite(adapter.getRef(position).getKey());
-                            imageViewFav.setImageResource(R.drawable.ic_favorite_border_black_24dp);
+                            imageViewFav.setImageResource(R.drawable.ic_favorite_border_white_24dp);
                         }
                         else
                         {
                             database.addToFavorite(adapter.getRef(position).getKey());
-                            imageViewFav.setImageResource(R.drawable.ic_favorite_black_24dp);
+                            imageViewFav.setImageResource(R.drawable.ic_favorite_white_24dp);
                         }
                     }
                 });
 
-                textViewName.setText(model.getName());
-                Picasso.get().load(model.getImage()).into(imageView);
+                //Quick cart
+                imageViewCart.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Database database = new Database(FoodActivity.this);
+                        Order order = new Order(adapter.getRef(position).getKey(),
+                                model.getName(),
+                                "1" ,
+                                model.getPrice(),
+                                model.getDiscount());
+                        database.addToCart(order);
+                        Toast.makeText(FoodActivity.this, "Added to cart", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
 
                 holder.setItemClickListener(new ItemClickListener() {
                     @Override
@@ -254,6 +272,7 @@ public class FoodActivity extends AppCompatActivity {
                         startActivity(intent);
                     }
                 });
+
 
                 //fb_share_button_click_listener
                 imageFbShare.setOnClickListener(new View.OnClickListener() {
@@ -331,6 +350,8 @@ public class FoodActivity extends AppCompatActivity {
                 });
             }
         };
+
+        //TODO have to implement button OnCLickListener
 
         recyclerViewFood.setAdapter(searchAdapter);
         searchAdapter.startListening();

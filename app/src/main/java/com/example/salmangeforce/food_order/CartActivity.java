@@ -28,7 +28,7 @@ import java.util.List;
 public class CartActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
-    TextView textViewPrice;
+    public TextView textViewPrice;
     Button buttonOrder;
 
     FirebaseDatabase firebaseDatabase;
@@ -84,8 +84,8 @@ public class CartActivity extends AppCompatActivity {
         {
             total += (Integer.parseInt(order.getPrice()) * Integer.parseInt(order.getQuantity())
                     - Integer.parseInt(order.getDiscount()) * Integer.parseInt(order.getQuantity()));
-            textViewPrice.setText(String.format(" $%s", total));
         }
+        textViewPrice.setText(String.format(" $%s", total));
     }
 
     private void showDialog() {

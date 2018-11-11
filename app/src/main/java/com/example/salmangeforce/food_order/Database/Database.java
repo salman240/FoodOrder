@@ -1,5 +1,6 @@
 package com.example.salmangeforce.food_order.Database;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -25,7 +26,7 @@ public class Database extends SQLiteAssetHelper {
         SQLiteQueryBuilder sqLiteQueryBuilder = new SQLiteQueryBuilder();
 
         String sqlTable = "OrderDetail";
-        String[] sqlColumns = {"ProductId", "ProductName", "Quantity", "Price", "Discount"};
+        String[] sqlColumns = {"ID", "ProductId", "ProductName", "Quantity", "Price", "Discount"};
 
         sqLiteQueryBuilder.setTables(sqlTable);
         Cursor cursor = sqLiteQueryBuilder.query(sqLiteDatabase, sqlColumns, null, null, null, null, null);
@@ -34,10 +35,11 @@ public class Database extends SQLiteAssetHelper {
         if(cursor.moveToFirst())
         {
             do {
-                result.add(new Order(cursor.getString(cursor.getColumnIndex("ProductId")),
+                result.add(new Order(cursor.getInt(cursor.getColumnIndex("ID")),
+                    cursor.getString(cursor.getColumnIndex("ProductId")),
                     cursor.getString(cursor.getColumnIndex("ProductName")),
-                    cursor.getString(cursor.getColumnIndex("Quantity")),
                     cursor.getString(cursor.getColumnIndex("Price")),
+                    cursor.getString(cursor.getColumnIndex("Quantity")),
                     cursor.getString(cursor.getColumnIndex("Discount"))
                 ));
             }
@@ -97,5 +99,28 @@ public class Database extends SQLiteAssetHelper {
     }
 
 
+    public int getOrderCount() {
+        int count = 0;
 
+        SQLiteDatabase sqLiteDatabase = getReadableDatabase();
+        String query = String.format("SELECT COUNT(*) FROM OrderDetail");
+        Cursor cursor = sqLiteDatabase.rawQuery(query, null);
+        if(cursor.moveToFirst())
+        {
+            do{
+                count = cursor.getInt(0);
+            }
+            while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        return count;
+    }
+
+    public void updateCart(Order order) {
+        SQLiteDatabase sqLiteDatabase = getWritableDatabase();
+        @SuppressLint("DefaultLocale")
+        String query = String.format("UPDATE OrderDetail SET Quantity = %s WHERE ID = %d", order.getQuantity(), order.getID());
+        sqLiteDatabase.execSQL(query);
+    }
 }//class ends

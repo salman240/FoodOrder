@@ -2,6 +2,7 @@ package com.example.salmangeforce.food_order.Model;
 
 public class Order {
 
+    private int ID;
     private String ProductId;
     private String ProductName;
     private String Price;
@@ -16,6 +17,23 @@ public class Order {
         Price = price;
         Quantity = quantity;
         Discount = discount;
+    }
+
+    public Order(int ID, String productId, String productName, String price, String quantity, String discount) {
+        this.ID = ID;
+        ProductId = productId;
+        ProductName = productName;
+        Price = price;
+        Quantity = quantity;
+        Discount = discount;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
     }
 
     public String getProductId() {
